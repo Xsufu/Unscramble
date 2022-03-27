@@ -31,11 +31,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
  * Фрагмент, в котором присходит игра, содержит логику игры
  */
 class GameFragment : Fragment() {
-
-    private var score = 0
-    private var currentWordCount = 0
-    private var currentScrambledWord = "test"
-
     // Экземпляр объекта привзяки с доступом ко views в макете game_fragment.xml
     private lateinit var binding: GameFragmentBinding
 
@@ -90,10 +85,11 @@ class GameFragment : Fragment() {
     private fun onSubmitWord() {
         val playerWord = binding.textInputEditText.text.toString()
 
-        if (viewModel.isUserWordCorrect(playerWord)){
+        if (viewModel.isUserWordCorrect(playerWord)) {
             setErrorTextField(false)
             if (viewModel.nextWord()) {
                 updateNextWordOnScreen()
+                binding.score.text = "SCORE: ${viewModel.score}"
             } else {
                 showFinalScoreDialog()
             }
@@ -128,6 +124,7 @@ class GameFragment : Fragment() {
      * Реинициализирует данные во ViewModel и обновляет views с новыми данным для перезапуска игры
      */
     private fun restartGame() {
+        viewModel.reinitializeData()
         setErrorTextField(false)
         updateNextWordOnScreen()
     }
