@@ -54,8 +54,12 @@ class GameFragment : Fragment() {
         // Устанавливает прослушку нажатия на кнопки "Submit" и "Skip"
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
-        // Обновляет UI
-        updateNextWordOnScreen()
+        // Observe the currentScrambledWord LiveData.
+        // Наблюдатель за currentScrambledWord LiveData
+        viewModel.currentScrambledWord.observe(viewLifecycleOwner
+        ) { newWord ->
+            binding.textViewUnscrambledWord.text = newWord
+        }
         binding.score.text = getString(R.string.score, 0)
         binding.wordCount.text = getString(
             R.string.word_count, 0, MAX_NO_OF_WORDS)
@@ -87,10 +91,7 @@ class GameFragment : Fragment() {
 
         if (viewModel.isUserWordCorrect(playerWord)) {
             setErrorTextField(false)
-            if (viewModel.nextWord()) {
-                updateNextWordOnScreen()
-                binding.score.text = "SCORE: ${viewModel.score}"
-            } else {
+            if (!viewModel.nextWord()) {
                 showFinalScoreDialog()
             }
         } else {
@@ -105,7 +106,6 @@ class GameFragment : Fragment() {
     private fun onSkipWord() {
         if (viewModel.nextWord()) {
             setErrorTextField(false)
-            updateNextWordOnScreen()
         } else {
             showFinalScoreDialog()
         }
@@ -126,7 +126,6 @@ class GameFragment : Fragment() {
     private fun restartGame() {
         viewModel.reinitializeData()
         setErrorTextField(false)
-        updateNextWordOnScreen()
     }
 
     /*
@@ -147,12 +146,5 @@ class GameFragment : Fragment() {
             binding.textField.isErrorEnabled = false
             binding.textInputEditText.text = null
         }
-    }
-
-    /*
-     * Отображает следующее засремблированное слово на экране
-     */
-    private fun updateNextWordOnScreen() {
-        binding.textViewUnscrambledWord.text = viewModel.currentScrambledWord
     }
 }
