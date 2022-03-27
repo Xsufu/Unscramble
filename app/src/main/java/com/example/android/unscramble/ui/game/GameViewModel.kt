@@ -45,12 +45,11 @@ class GameViewModel: ViewModel() {
     */
     private fun getNextWord() {
         currentWord = allWordsList.random()
-
         val tempWord = currentWord.toCharArray()
+
         while (String(tempWord).equals(currentWord, false)){
             tempWord.shuffle()
         }
-
         if (wordsList.contains(currentWord)){
             getNextWord()
         } else {
@@ -58,6 +57,16 @@ class GameViewModel: ViewModel() {
             ++_currentWordCount
             wordsList.add(currentWord)
         }
+    }
+
+    /*
+    * Реинициализирует игровые данные для перезапуска игры
+    */
+    fun reinitializeData() {
+        _score = 0
+        _currentWordCount = 0
+        wordsList.clear()
+        getNextWord()
     }
 
     /*
