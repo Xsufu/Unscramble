@@ -52,9 +52,15 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.gameViewModel = viewModel
+        binding.maxNoOfWords = MAX_NO_OF_WORDS
+
         // Устанавливает прослушку нажатия на кнопки "Submit" и "Skip"
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
+        // Укажите представление фрагмента в качестве владельца жизненного цикла привязки.
+        // Это используется для того, чтобы привязка могла наблюдать за обновлениями LiveData
+        binding.lifecycleOwner = viewLifecycleOwner
         // Обновление заскреблированного слова в LiveData
         viewModel.currentScrambledWord.observe(viewLifecycleOwner) { newWord ->
             binding.textViewUnscrambledWord.text = newWord
