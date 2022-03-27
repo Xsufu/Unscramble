@@ -31,6 +31,15 @@ class GameViewModel: ViewModel() {
         _score += SCORE_INCREASE
     }
 
+    // Проверка правильности слова, введённого игроком
+    fun isUserWordCorrect(playerWord: String): Boolean {
+        if (playerWord.equals(currentWord, true)) {
+            increaseScore()
+            return true
+        }
+        return false
+    }
+
     /*
     * Обновляет currentWord и currentScrambledWord следующим словом
     */
