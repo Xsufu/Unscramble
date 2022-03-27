@@ -61,18 +61,6 @@ class GameFragment : Fragment() {
         // Укажите представление фрагмента в качестве владельца жизненного цикла привязки.
         // Это используется для того, чтобы привязка могла наблюдать за обновлениями LiveData
         binding.lifecycleOwner = viewLifecycleOwner
-        // Обновление заскреблированного слова в LiveData
-        viewModel.currentScrambledWord.observe(viewLifecycleOwner) { newWord ->
-            binding.textViewUnscrambledWord.text = newWord
-        }
-        // Обновление счёта игрока в LiveData
-        viewModel.score.observe(viewLifecycleOwner) { newScore ->
-            binding.score.text = getString(R.string.score, newScore)
-        }
-        // Обновление счётчика текущих слова в LiveData
-        viewModel.currentWordCount.observe(viewLifecycleOwner) { newWordCount ->
-            binding.wordCount.text = getString(R.string.word_count, newWordCount, MAX_NO_OF_WORDS)
-        }
     }
 
     /*
