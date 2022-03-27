@@ -17,15 +17,18 @@
 package com.example.android.unscramble.ui.game
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.android.unscramble.R
 import com.example.android.unscramble.databinding.GameFragmentBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * Fragment where the game is played, contains the game logic.
+ * Фрагмент, в котором присходит игра, содержит логику игры
  */
 class GameFragment : Fragment() {
 
@@ -33,19 +36,19 @@ class GameFragment : Fragment() {
     private var currentWordCount = 0
     private var currentScrambledWord = "test"
 
-
-    // Binding object instance with access to the views in the game_fragment.xml layout
+    // Экземпляр объекта привзяки с доступом ко views в макете game_fragment.xml
     private lateinit var binding: GameFragmentBinding
 
-    // Create a ViewModel the first time the fragment is created.
-    // If the fragment is re-created, it receives the same GameViewModel instance created by the
-    // first fragment
+    // Создаёт ViewModel при первом создании фрагмента.
+    // Если фрагмент пересоздаётся, он получает тот же экземпляр GameViewModel,
+    // созданный первым фрагментом
+    private val viewModel: GameViewModel by viewModels()
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout XML file and return a binding object instance
+        // Раскрывает XML макет и возвращает экземпляр объекта привязки
         binding = GameFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,44 +56,51 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Setup a click listener for the Submit and Skip buttons.
+        // Устанавливает прослушку нажатия на кнопки "Submit" и "Skip"
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
-        // Update the UI
+        // Обновляет UI
         updateNextWordOnScreen()
         binding.score.text = getString(R.string.score, 0)
         binding.wordCount.text = getString(
-                R.string.word_count, 0, MAX_NO_OF_WORDS)
+            R.string.word_count, 0, MAX_NO_OF_WORDS)
     }
 
     /*
-    * Checks the user's word, and updates the score accordingly.
-    * Displays the next scrambled word.
+    * Создаёт и показывает диалог с итоговым счётом
+    */
+    private fun showFinalScoreDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.congratulations))
+            .setMessage(getString(R.string.you_scored, viewModel.score))
+            .setCancelable(false)
+            .setNegativeButton(getString(R.string.exit)) { _, _ ->
+                exitGame()
+            }
+            .setPositiveButton(getString(R.string.play_again)) { _, _ ->
+                restartGame()
+            }
+            .show()
+    }
+
+    /*
+    * Проверяет слово пользователя и обновляет счёт соответсвенно.
+    * Отображает текущее заскремблированное слово
     */
     private fun onSubmitWord() {
-        currentScrambledWord = getNextScrambledWord()
-        currentWordCount++
-        score += SCORE_INCREASE
-        binding.wordCount.text = getString(R.string.word_count, currentWordCount, MAX_NO_OF_WORDS)
-        binding.score.text = getString(R.string.score, score)
-        setErrorTextField(false)
-        updateNextWordOnScreen()
+
     }
 
     /*
-     * Skips the current word without changing the score.
-     * Increases the word count.
+     * Пропускает текущее слово без изменения счёта
+     * Увеличивает счётчик слов
      */
     private fun onSkipWord() {
-        currentScrambledWord = getNextScrambledWord()
-        currentWordCount++
-        binding.wordCount.text = getString(R.string.word_count, currentWordCount, MAX_NO_OF_WORDS)
-        setErrorTextField(false)
-        updateNextWordOnScreen()
+
     }
 
     /*
-     * Gets a random word for the list of words and shuffles the letters in it.
+     * Получает рандомное слово из списка слов и перемешивает буквы в нём
      */
     private fun getNextScrambledWord(): String {
         val tempWord = allWordsList.random().toCharArray()
@@ -99,8 +109,7 @@ class GameFragment : Fragment() {
     }
 
     /*
-     * Re-initializes the data in the ViewModel and updates the views with the new data, to
-     * restart the game.
+     * Реинициализирует данные во ViewModel и обновляет views с новыми данным для перезапуска игры
      */
     private fun restartGame() {
         setErrorTextField(false)
@@ -108,14 +117,14 @@ class GameFragment : Fragment() {
     }
 
     /*
-     * Exits the game.
+     * Выходит из игры
      */
     private fun exitGame() {
         activity?.finish()
     }
 
     /*
-    * Sets and resets the text field error status.
+    * Устанавливает и сбрасывает статус ошибки текстового поля.
     */
     private fun setErrorTextField(error: Boolean) {
         if (error) {
@@ -128,9 +137,9 @@ class GameFragment : Fragment() {
     }
 
     /*
-     * Displays the next scrambled word on screen.
+     * Отображает следующее засремблированное слово на экране
      */
     private fun updateNextWordOnScreen() {
-        binding.textViewUnscrambledWord.text = currentScrambledWord
+        binding.textViewUnscrambledWord.text = viewModel.currentScrambledWord
     }
 }
