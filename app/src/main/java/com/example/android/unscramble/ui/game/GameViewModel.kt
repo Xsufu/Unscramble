@@ -26,6 +26,11 @@ class GameViewModel: ViewModel() {
         getNextWord()
     }
 
+    // Увеличивает счёт игрока
+    private fun increaseScore() {
+        _score += SCORE_INCREASE
+    }
+
     /*
     * Обновляет currentWord и currentScrambledWord следующим словом
     */
