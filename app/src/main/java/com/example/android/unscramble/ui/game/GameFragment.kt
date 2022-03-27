@@ -17,7 +17,6 @@
 package com.example.android.unscramble.ui.game
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,15 +106,6 @@ class GameFragment : Fragment() {
         } else {
             showFinalScoreDialog()
         }
-    }
-
-    /*
-     * Получает рандомное слово из списка слов и перемешивает буквы в нём
-     */
-    private fun getNextScrambledWord(): String {
-        val tempWord = allWordsList.random().toCharArray()
-        tempWord.shuffle()
-        return String(tempWord)
     }
 
     /*
