@@ -107,7 +107,12 @@ class GameFragment : Fragment() {
      * Увеличивает счётчик слов
      */
     private fun onSkipWord() {
-
+        if (viewModel.nextWord()) {
+            setErrorTextField(false)
+            updateNextWordOnScreen()
+        } else {
+            showFinalScoreDialog()
+        }
     }
 
     /*
